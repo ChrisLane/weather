@@ -7,7 +7,6 @@ import android.util.Log;
 import me.chrislane.weather.Constants;
 import me.chrislane.weather.activities.MainActivity;
 import me.chrislane.weather.models.TodayWeatherModel;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
@@ -39,6 +38,7 @@ public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
         String url = "http://api.openweathermap.org/data/2.5/weather?" +
                 "lat=" + location.getLatitude() +
                 "&lon=" + location.getLongitude() +
+                "&units=" + Constants.UNIT +
                 "&appid=" + Constants.API_KEY;
 
         return JsonTask.fetchJson(url);
@@ -54,11 +54,7 @@ public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
         }
 
         // TODO: Update today's weather model
-        try {
-            todayWeatherModel.setTemperature((double) jsonObject.getJSONObject("main").get("temp"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        todayWeatherModel.setFromJson(jsonObject);
 
         // TODO: Update today's weather UI
         mainActivity.updateTodayUI();

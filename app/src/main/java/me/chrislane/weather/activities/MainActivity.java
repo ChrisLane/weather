@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 import me.chrislane.weather.R;
 import me.chrislane.weather.models.TodayWeatherModel;
@@ -22,7 +23,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
     private TodayWeatherModel todayWeatherModel;
-    private TextView todayTemperature;
+    private TextView locationName, todayTemperature, todayDescription, todayWind, todayPressure,
+            todayHumidity, todaySunrise, todaySunset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +37,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         progressDialog = new ProgressDialog(this);
         // Initialise today's weather model
         todayWeatherModel = new TodayWeatherModel();
+
         // Initialise UI elements
+        locationName = (TextView) findViewById(R.id.location);
         todayTemperature = (TextView) findViewById(R.id.today_temperature);
+        todayDescription = (TextView) findViewById(R.id.today_description);
+        todayWind = (TextView) findViewById(R.id.today_wind);
+        todayPressure = (TextView) findViewById(R.id.today_pressure);
+        todayHumidity = (TextView) findViewById(R.id.today_humidity);
+        todaySunrise = (TextView) findViewById(R.id.today_sunrise);
+        todaySunset = (TextView) findViewById(R.id.today_sunset);
 
         // Get the device's location
         getLocation();
@@ -44,39 +54,42 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
-        // Don't check location again
-        locationManager.removeUpdates(this);
+        if (location != null) {
+            // Don't check location again
+            locationManager.removeUpdates(this);
 
-        new TodayWeatherTask(this, progressDialog, todayWeatherModel).execute(location);
+            Log.v("Location Changed", location.getLatitude() + " and " + location.getLongitude());
+
+            new TodayWeatherTask(this, progressDialog, todayWeatherModel).execute(location);
+        }
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // TODO: Update weather on resume
+        getLocation();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        locationManager.removeUpdates(this);
+        if (locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
     }
 
     @Override
@@ -96,18 +109,34 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void getLocation() {
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+
+        // Get weather for the last known location
+        if (lastKnownLocation != null) {
+            new TodayWeatherTask(this, progressDialog, todayWeatherModel).execute(lastKnownLocation);
+        }
+
+        // Get weather for the current location
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // TODO: Explain permissions if permission previously denied
             // Request permissions
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        } else if (locationManager.isProviderEnabled(locationProvider)) {
+            locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
         }
     }
 
     public void updateTodayUI() {
+        locationName.setText(todayWeatherModel.getLocationName());
         todayTemperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", todayWeatherModel.getTemperature()));
+        todayDescription.setText(todayWeatherModel.getDescription());
+        todayWind.setText(String.format(Locale.ENGLISH, "%s", todayWeatherModel.getWindSpeed()));
+        todayPressure.setText(String.format(Locale.ENGLISH, "%s", todayWeatherModel.getPressure()));
+        todayHumidity.setText(String.format(Locale.ENGLISH, "%s", todayWeatherModel.getHumidity()));
+        todaySunrise.setText(String.format(Locale.ENGLISH, "%s", todayWeatherModel.getSunrise()));
+        todaySunset.setText(String.format(Locale.ENGLISH, "%s", todayWeatherModel.getSunset()));
     }
 }

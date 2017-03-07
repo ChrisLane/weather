@@ -14,8 +14,6 @@ import java.net.URL;
 public class JsonTask {
 
     protected static JSONObject fetchJson(String param) {
-        Log.d("JsonTask", "Task background process");
-
         HttpURLConnection connection = null;
         BufferedReader reader = null;
 

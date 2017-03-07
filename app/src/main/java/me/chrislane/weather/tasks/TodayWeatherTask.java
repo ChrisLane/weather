@@ -25,7 +25,7 @@ public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
         super.onPreExecute();
         Log.d("TodayWeatherTask", "Task pre execute");
 
-        progressDialog.setMessage("Please wait");
+        progressDialog.setMessage("Getting weather...");
         progressDialog.setCancelable(false);
         progressDialog.show();
     }

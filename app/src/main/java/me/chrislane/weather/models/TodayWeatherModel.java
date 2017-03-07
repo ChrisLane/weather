@@ -3,10 +3,13 @@ package me.chrislane.weather.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class TodayWeatherModel {
     private double temperature, pressure, minTemperature, maxTemperature, windSpeed, windDirection;
-    private int sunrise, sunset, humidity;
-    private String locationName, description, icon;
+    private int humidity;
+    private Date sunrise, sunset;
+    private String countryCode, cityName, description, icon;
 
     public double getTemperature() {
         return temperature;
@@ -56,20 +59,20 @@ public class TodayWeatherModel {
         this.windDirection = windDirection;
     }
 
-    public int getSunrise() {
+    public Date getSunrise() {
         return sunrise;
     }
 
     public void setSunrise(int sunrise) {
-        this.sunrise = sunrise;
+        this.sunrise = new Date(sunrise);
     }
 
-    public int getSunset() {
+    public Date getSunset() {
         return sunset;
     }
 
     public void setSunset(int sunset) {
-        this.sunset = sunset;
+        this.sunset = new Date(sunset);
     }
 
     public String getDescription() {
@@ -77,7 +80,7 @@ public class TodayWeatherModel {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.substring(0,1).toUpperCase() + description.substring(1).toLowerCase();
     }
 
     public String getIcon() {
@@ -96,12 +99,20 @@ public class TodayWeatherModel {
         this.humidity = humidity;
     }
 
-    public String getLocationName() {
-        return locationName;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public void setFromJson(JSONObject json) {
@@ -115,9 +126,10 @@ public class TodayWeatherModel {
             setMaxTemperature(json.getJSONObject("main").getDouble("temp_max"));
             setWindSpeed(json.getJSONObject("wind").getDouble("speed"));
             setWindDirection(json.getJSONObject("wind").getDouble("deg"));
+            setCountryCode(json.getJSONObject("sys").getString("country"));
             setSunrise(json.getJSONObject("sys").getInt("sunrise"));
             setSunset(json.getJSONObject("sys").getInt("sunset"));
-            setLocationName(json.getString("name"));
+            setCityName(json.getString("name"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

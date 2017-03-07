@@ -6,18 +6,18 @@ import android.os.AsyncTask;
 import android.util.Log;
 import me.chrislane.weather.Constants;
 import me.chrislane.weather.activities.MainActivity;
-import me.chrislane.weather.models.TodayWeatherModel;
+import me.chrislane.weather.models.WeatherModel;
 import org.json.JSONObject;
 
 public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
     private final ProgressDialog progressDialog;
-    private final TodayWeatherModel todayWeatherModel;
+    private final WeatherModel weatherModel;
     private final MainActivity mainActivity;
 
-    public TodayWeatherTask(MainActivity mainActivity, ProgressDialog progressDialog, TodayWeatherModel todayWeatherModel) {
+    public TodayWeatherTask(MainActivity mainActivity, ProgressDialog progressDialog, WeatherModel weatherModel) {
         this.mainActivity = mainActivity;
         this.progressDialog = progressDialog;
-        this.todayWeatherModel = todayWeatherModel;
+        this.weatherModel = weatherModel;
 
     }
 
@@ -53,10 +53,10 @@ public class TodayWeatherTask extends AsyncTask<Location, String, JSONObject> {
             progressDialog.dismiss();
         }
 
-        // TODO: Update today's weather model
-        todayWeatherModel.setFromJson(jsonObject);
+        // Update today's weather model
+        weatherModel.setFromJson(jsonObject);
 
-        // TODO: Update today's weather UI
+        // Update today's weather UI
         mainActivity.updateTodayUI();
     }
 }

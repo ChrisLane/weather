@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-public class TodayWeatherModel {
+public class WeatherModel {
     private double temperature, pressure, minTemperature, maxTemperature, windSpeed, windDirection;
     private int humidity;
     private Date sunrise, sunset;

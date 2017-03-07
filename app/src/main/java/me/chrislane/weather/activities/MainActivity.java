@@ -13,7 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 import me.chrislane.weather.R;
-import me.chrislane.weather.models.TodayWeatherModel;
+import me.chrislane.weather.models.WeatherModel;
 import me.chrislane.weather.tasks.TodayWeatherTask;
 
 import java.text.DateFormat;
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
-    private TodayWeatherModel todayWeatherModel;
+    private WeatherModel todayWeatherModel;
     private TextView locationName, todayTemperature, todayDescription, todayWind, todayPressure,
             todayHumidity, todaySunrise, todaySunset;
 
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Initialise progress dialog
         progressDialog = new ProgressDialog(this);
         // Initialise today's weather model
-        todayWeatherModel = new TodayWeatherModel();
+        todayWeatherModel = new WeatherModel();
 
         // Initialise UI elements
         locationName = (TextView) findViewById(R.id.location);

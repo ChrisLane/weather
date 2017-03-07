@@ -1,4 +1,4 @@
-package me.chrislane.weather;
+package me.chrislane.weather.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

@@ -64,7 +64,7 @@ public class TodayWeatherModel {
     }
 
     public void setSunrise(int sunrise) {
-        this.sunrise = new Date(sunrise);
+        this.sunrise = new Date(sunrise * 1000L);
     }
 
     public Date getSunset() {
@@ -72,7 +72,7 @@ public class TodayWeatherModel {
     }
 
     public void setSunset(int sunset) {
-        this.sunset = new Date(sunset);
+        this.sunset = new Date(sunset * 1000L);
     }
 
     public String getDescription() {

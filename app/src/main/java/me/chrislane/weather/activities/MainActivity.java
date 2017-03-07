@@ -135,14 +135,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         locationName.setText(todayWeatherModel.getCityName() + ", " + todayWeatherModel.getCountryCode());
         todayTemperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", todayWeatherModel.getTemperature()));
         todayDescription.setText(todayWeatherModel.getDescription());
-        todayWind.setText(String.format(Locale.ENGLISH, "Wind Speed %d m/s", Math.round(todayWeatherModel.getWindSpeed())));
-        todayPressure.setText(String.format(Locale.ENGLISH, "Pressure %d hPa", Math.round(todayWeatherModel.getPressure())));
-        todayHumidity.setText(String.format(Locale.ENGLISH, "Humidity %d%%", todayWeatherModel.getHumidity()));
+        todayWind.setText(String.format(Locale.ENGLISH, "Wind Speed: %d m/s", Math.round(todayWeatherModel.getWindSpeed())));
+        todayPressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(todayWeatherModel.getPressure())));
+        todayHumidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", todayWeatherModel.getHumidity()));
 
         if (todayWeatherModel.getSunrise() != null && todayWeatherModel.getSunset() != null) {
             DateFormat formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-            todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise %s", formatter.format(todayWeatherModel.getSunrise())));
-            todaySunset.setText(String.format(Locale.ENGLISH, "Sunset %s", formatter.format(todayWeatherModel.getSunset())));
+            todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(todayWeatherModel.getSunrise())));
+            todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(todayWeatherModel.getSunset())));
         }
     }
 }

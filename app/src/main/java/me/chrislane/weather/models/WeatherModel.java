@@ -1,5 +1,6 @@
 package me.chrislane.weather.models;
 
+import me.chrislane.weather.tasks.WeatherTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -115,21 +116,42 @@ public class WeatherModel {
         this.countryCode = countryCode;
     }
 
-    public void setFromJson(JSONObject json) {
+    public void setFromJson(JSONObject json, WeatherTask.API api) {
         try {
-            setDescription(json.getJSONArray("weather").getJSONObject(0).getString("description"));
-            setIcon(json.getJSONArray("weather").getJSONObject(0).getString("icon"));
-            setTemperature(json.getJSONObject("main").getDouble("temp"));
-            setPressure(json.getJSONObject("main").getDouble("pressure"));
-            setHumidity(json.getJSONObject("main").getInt("humidity"));
-            setMinTemperature(json.getJSONObject("main").getDouble("temp_min"));
-            setMaxTemperature(json.getJSONObject("main").getDouble("temp_max"));
-            setWindSpeed(json.getJSONObject("wind").getDouble("speed"));
-            setWindDirection(json.getJSONObject("wind").getDouble("deg"));
-            setCountryCode(json.getJSONObject("sys").getString("country"));
-            setSunrise(json.getJSONObject("sys").getInt("sunrise"));
-            setSunset(json.getJSONObject("sys").getInt("sunset"));
-            setCityName(json.getString("name"));
+            JSONObject weather = json.getJSONArray("weather").getJSONObject(0);
+            switch (api) {
+                case WEATHER:
+                    JSONObject main = json.getJSONObject("main");
+                    JSONObject wind = json.getJSONObject("wind");
+                    JSONObject sys = json.getJSONObject("sys");
+
+                    setDescription(weather.getString("description"));
+                    setIcon(weather.getString("icon"));
+                    setTemperature(main.getDouble("temp"));
+                    setPressure(main.getDouble("pressure"));
+                    setHumidity(main.getInt("humidity"));
+                    setMinTemperature(main.getDouble("temp_min"));
+                    setMaxTemperature(main.getDouble("temp_max"));
+                    setWindSpeed(wind.getDouble("speed"));
+                    setWindDirection(wind.getDouble("deg"));
+                    setSunrise(sys.getInt("sunrise"));
+                    setSunset(sys.getInt("sunset"));
+                    setCountryCode(sys.getString("country"));
+                    setCityName(json.getString("name"));
+                    break;
+                case FORECAST:
+                    JSONObject temp = json.getJSONObject("temp");
+
+                    setTemperature(temp.getDouble("day"));
+                    setMinTemperature(temp.getDouble("min"));
+                    setMaxTemperature(temp.getDouble("max"));
+                    setPressure(json.getDouble("pressure"));
+                    setHumidity(json.getInt("humidity"));
+                    setDescription(weather.getString("description"));
+                    setIcon(weather.getString("icon"));
+                    setWindSpeed(json.getDouble("speed"));
+                    setWindDirection(json.getDouble("deg"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

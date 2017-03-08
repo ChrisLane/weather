@@ -32,8 +32,7 @@ public class JsonTask {
 
             while ((line = reader.readLine()) != null) {
                 buffer.append(line).append("\n");
-                Log.d("JsonTask Response", "> " + line);   //here u ll get whole response...... :-)
-
+                Log.d("JsonTask Response", "> " + line);
             }
 
             try {

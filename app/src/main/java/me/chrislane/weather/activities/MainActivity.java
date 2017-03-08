@@ -13,7 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 import me.chrislane.weather.R;
+import me.chrislane.weather.models.WeatherForecastModel;
 import me.chrislane.weather.models.WeatherModel;
+import me.chrislane.weather.tasks.FutureWeatherTask;
 import me.chrislane.weather.tasks.TodayWeatherTask;
 
 import java.text.DateFormat;
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
-    private WeatherModel todayWeatherModel;
+    private WeatherForecastModel weatherForecastModel;
     private TextView locationName, todayTemperature, todayDescription, todayWind, todayPressure,
             todayHumidity, todaySunrise, todaySunset;
 
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Initialise progress dialog
         progressDialog = new ProgressDialog(this);
         // Initialise today's weather model
-        todayWeatherModel = new WeatherModel();
+        weatherForecastModel = new WeatherForecastModel();
 
         // Initialise UI elements
         locationName = (TextView) findViewById(R.id.location);
@@ -62,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             Log.v("Location Changed", location.getLatitude() + " and " + location.getLongitude());
 
-            new TodayWeatherTask(this, progressDialog, todayWeatherModel).execute(location);
+            new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
+            new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
         }
     }
 
@@ -116,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         // Get weather for the last known location
         if (lastKnownLocation != null) {
-            new TodayWeatherTask(this, progressDialog, todayWeatherModel).execute(lastKnownLocation);
+            new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
+            new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
         }
 
         // Get weather for the current location
@@ -131,18 +135,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void updateTodayUI() {
-        locationName.setText(todayWeatherModel.getCityName() + ", " + todayWeatherModel.getCountryCode());
-        todayTemperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", todayWeatherModel.getTemperature()));
-        todayDescription.setText(todayWeatherModel.getDescription());
-        todayWind.setText(String.format(Locale.ENGLISH, "Wind Speed: %d m/s", Math.round(todayWeatherModel.getWindSpeed())));
-        todayPressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(todayWeatherModel.getPressure())));
-        todayHumidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", todayWeatherModel.getHumidity()));
+    public void updateWeatherUI() {
+        WeatherModel today = weatherForecastModel.getToday();
+        locationName.setText(today.getCityName() + ", " + today.getCountryCode());
+        todayTemperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", today.getTemperature()));
+        todayDescription.setText(today.getDescription());
+        todayWind.setText(String.format(Locale.ENGLISH, "Wind Speed: %d m/s", Math.round(today.getWindSpeed())));
+        todayPressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(today.getPressure())));
+        todayHumidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", today.getHumidity()));
 
-        if (todayWeatherModel.getSunrise() != null && todayWeatherModel.getSunset() != null) {
+        if (today.getSunrise() != null && today.getSunset() != null) {
             DateFormat formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-            todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(todayWeatherModel.getSunrise())));
-            todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(todayWeatherModel.getSunset())));
+            todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(today.getSunrise())));
+            todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(today.getSunset())));
         }
     }
 }

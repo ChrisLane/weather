@@ -9,8 +9,16 @@ import java.util.Date;
 public class WeatherModel {
     private double temperature, pressure, minTemperature, maxTemperature, windSpeed, windDirection;
     private int humidity;
-    private Date sunrise, sunset;
+    private Date sunrise, sunset, date;
     private String countryCode, cityName, description, icon;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(int date) {
+        this.date = new Date(date * 1000L);
+    }
 
     public double getTemperature() {
         return temperature;
@@ -142,6 +150,7 @@ public class WeatherModel {
                 case FORECAST:
                     JSONObject temp = json.getJSONObject("temp");
 
+                    setDate(json.getInt("dt"));
                     setTemperature(temp.getDouble("day"));
                     setMinTemperature(temp.getDouble("min"));
                     setMaxTemperature(temp.getDouble("max"));

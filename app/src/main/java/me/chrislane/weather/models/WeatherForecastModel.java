@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class WeatherForecastModel {
     private WeatherModel
             today = new WeatherModel(),
@@ -52,6 +54,17 @@ public class WeatherForecastModel {
                 return dayFive;
         }
         return null;
+    }
+
+    public ArrayList<WeatherModel> getFutureDays() {
+        ArrayList<WeatherModel> result = new ArrayList<>();
+        result.add(dayOne);
+        result.add(dayTwo);
+        result.add(dayThree);
+        result.add(dayFour);
+        result.add(dayFive);
+
+        return result;
     }
 
     public void formWeatherJson(JSONObject json, WeatherTask.API api) {

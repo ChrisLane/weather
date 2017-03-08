@@ -22,7 +22,6 @@ public abstract class WeatherTask extends AsyncTask<Location, String, JSONObject
         this.mainActivity = mainActivity;
         this.progressDialog = progressDialog;
         this.weatherForecastModel = weatherForecastModel;
-
     }
 
     protected void onPreExecute() {
@@ -66,15 +65,14 @@ public abstract class WeatherTask extends AsyncTask<Location, String, JSONObject
         super.onPostExecute(jsonObject);
         Log.d("WeatherTask", "Task post execute");
 
+        mainActivity.setCurrentLocationFound(true);
+
         if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
 
         // Update today's weather model
         weatherForecastModel.formWeatherJson(jsonObject, getAPI());
-
-        // Update today's weather UI
-        mainActivity.updateWeatherUI();
     }
 
     public abstract API getAPI();

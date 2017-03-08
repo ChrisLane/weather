@@ -10,119 +10,142 @@
         android:fitsSystemWindows="true"
         tools:context="me.chrislane.weather.activities.MainActivity">
 
-    <LinearLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-        <android.support.design.widget.AppBarLayout
-                android:id="@+id/appbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/appbar_padding_top"
-                android:theme="@style/AppTheme.AppBarOverlay">
-
-            <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"
-                    app:layout_scrollFlags="scroll|enterAlways">
-
-                <SearchView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimary"/>
-            </android.support.v7.widget.Toolbar>
-
-        </android.support.design.widget.AppBarLayout>
+            android:layout_height="match_parent">
 
         <LinearLayout
+                android:id="@+id/content_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:baselineAligned="false"
-                android:background="@android:color/holo_blue_bright"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
+            <android.support.design.widget.AppBarLayout
+                    android:id="@+id/appbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/appbar_padding_top"
+                    android:theme="@style/AppTheme.AppBarOverlay">
+
+                <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="?attr/colorPrimary"
+                        app:popupTheme="@style/AppTheme.PopupOverlay"
+                        app:layout_scrollFlags="scroll|enterAlways">
+
+                    <ImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="24dp"
+                            android:layout_marginEnd="16dp"
+                            android:contentDescription="@string/current_location_description"
+                            android:background="@android:color/transparent"
+                            android:onClick="onClickCurrentLocation"
+                            android:src="@drawable/ic_my_location_black"/>
+
+                    <SearchView
+                            android:id="@+id/location_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:background="@color/colorPrimary"/>
+
+                </android.support.v7.widget.Toolbar>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <!-- Today -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:padding="16dp"
+                    android:baselineAligned="false"
+                    android:background="@android:color/holo_blue_bright"
+                    android:orientation="horizontal">
 
-                <TextView
-                        android:id="@+id/location"
-                        android:layout_width="wrap_content"
+                <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="24sp"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                <TextView
-                        android:id="@+id/today_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="36sp"/>
+                    <TextView
+                            android:id="@+id/location_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="24sp"/>
 
-                <TextView
-                        android:id="@+id/today_description"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_temperature"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="36sp"
+                            android:textStyle="bold"/>
 
-                <TextView
-                        android:id="@+id/today_wind"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_description"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"/>
 
-                <TextView
-                        android:id="@+id/today_pressure"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_wind"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textSize="16sp"/>
 
-                <TextView
-                        android:id="@+id/today_humidity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_pressure"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"/>
 
-                <TextView
-                        android:id="@+id/today_sunrise"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_humidity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"/>
 
-                <TextView
-                        android:id="@+id/today_sunset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"/>
+                    <TextView
+                            android:id="@+id/today_sunrise"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"/>
 
-            </LinearLayout>
+                    <TextView
+                            android:id="@+id/today_sunset"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"/>
 
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                </LinearLayout>
 
-                <com.github.pwittchen.weathericonview.WeatherIconView
-                        android:id="@+id/today_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                <!-- Icon -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="end"
-                        custom:weatherIconResource="@string/wi_day_sunny_overcast"
-                        custom:weatherIconColor="@android:color/black"
-                        custom:weatherIconSize="100"/>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                    <com.github.pwittchen.weathericonview.WeatherIconView
+                            android:id="@+id/today_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            custom:weatherIconResource="@string/wi_day_sunny_overcast"
+                            custom:weatherIconColor="@android:color/black"
+                            custom:weatherIconSize="100"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

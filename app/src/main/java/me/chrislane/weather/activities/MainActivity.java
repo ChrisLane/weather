@@ -3,14 +3,15 @@ package me.chrislane.weather.activities;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.location.*;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import me.chrislane.weather.R;
 import me.chrislane.weather.models.WeatherForecastModel;
@@ -18,8 +19,11 @@ import me.chrislane.weather.models.WeatherModel;
 import me.chrislane.weather.tasks.FutureWeatherTask;
 import me.chrislane.weather.tasks.TodayWeatherTask;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
@@ -29,11 +33,27 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private WeatherForecastModel weatherForecastModel;
     private TextView locationName, todayTemperature, todayDescription, todayWind, todayPressure,
             todayHumidity, todaySunrise, todaySunset;
+    private boolean currentLocationFound = false;
+    private View dayOne, dayTwo, dayThree, dayFour, dayFive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Add to the layout
+        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.content_list);
+        dayOne = View.inflate(this, R.layout.weather_list_item, null);
+        dayTwo = View.inflate(this, R.layout.weather_list_item, null);
+        dayThree = View.inflate(this, R.layout.weather_list_item, null);
+        dayFour = View.inflate(this, R.layout.weather_list_item, null);
+        dayFive = View.inflate(this, R.layout.weather_list_item, null);
+
+        mainLayout.addView(dayOne);
+        mainLayout.addView(dayTwo);
+        mainLayout.addView(dayThree);
+        mainLayout.addView(dayFour);
+        mainLayout.addView(dayFive);
 
         // Initialise location manager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -43,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         weatherForecastModel = new WeatherForecastModel();
 
         // Initialise UI elements
-        locationName = (TextView) findViewById(R.id.location);
+        locationName = (TextView) findViewById(R.id.location_name);
         todayTemperature = (TextView) findViewById(R.id.today_temperature);
         todayDescription = (TextView) findViewById(R.id.today_description);
         todayWind = (TextView) findViewById(R.id.today_wind);
@@ -51,6 +71,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         todayHumidity = (TextView) findViewById(R.id.today_humidity);
         todaySunrise = (TextView) findViewById(R.id.today_sunrise);
         todaySunset = (TextView) findViewById(R.id.today_sunset);
+        SearchView locationSearch = (SearchView) findViewById(R.id.location_search);
+
+        locationSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (Geocoder.isPresent()) {
+                    try {
+                        Geocoder gc = new Geocoder(MainActivity.this);
+                        List<Address> addresses = gc.getFromLocationName(query, 1); // get the found Address Objects
+
+                        Location location = new Location("");
+                        location.setLatitude(addresses.get(0).getLatitude());
+                        location.setLongitude(addresses.get(0).getLongitude());
+
+                        new TodayWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
+                        new FutureWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
+                    } catch (IOException e) {
+                        // handle the exception
+                    }
+                }
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         // Get the device's location
         getLocation();
@@ -118,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
         // Get weather for the last known location
-        if (lastKnownLocation != null) {
+        if (lastKnownLocation != null && !currentLocationFound) {
             new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
             new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
         }
@@ -135,7 +184,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
-    public void updateWeatherUI() {
+    public ArrayList<View> getDayViews() {
+        ArrayList<View> result = new ArrayList<>();
+        result.add(dayOne);
+        result.add(dayTwo);
+        result.add(dayThree);
+        result.add(dayFour);
+        result.add(dayFive);
+
+        return result;
+    }
+
+    public void updateTodayUI() {
         WeatherModel today = weatherForecastModel.getToday();
         locationName.setText(today.getCityName() + ", " + today.getCountryCode());
         todayTemperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", today.getTemperature()));
@@ -149,5 +209,39 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(today.getSunrise())));
             todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(today.getSunset())));
         }
+    }
+
+    public void updateFutureUI() {
+        ArrayList<WeatherModel> daysWeather = weatherForecastModel.getFutureDays();
+        ArrayList<View> dayViews = getDayViews();
+        for (int i = 0; i < daysWeather.size(); i++) {
+            WeatherModel dayWeather = daysWeather.get(i);
+            View dayView = dayViews.get(i);
+
+            TextView date = (TextView) dayView.findViewById(R.id.date);
+            TextView description = (TextView) dayView.findViewById(R.id.description);
+            TextView windSpeed = (TextView) dayView.findViewById(R.id.wind_speed);
+            TextView pressure = (TextView) dayView.findViewById(R.id.pressure);
+            TextView humidity = (TextView) dayView.findViewById(R.id.humidity);
+            TextView temperature = (TextView) dayView.findViewById(R.id.temperature);
+
+            if (dayWeather.getDate() != null) {
+                DateFormat formatter = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
+                date.setText(String.format(Locale.ENGLISH, "%s", formatter.format(dayWeather.getDate())));
+            }
+            description.setText(dayWeather.getDescription());
+            windSpeed.setText(String.format(Locale.ENGLISH, "Wind Speed: %d m/s", Math.round(dayWeather.getWindSpeed())));
+            pressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(dayWeather.getPressure())));
+            humidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", dayWeather.getHumidity()));
+            temperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", dayWeather.getTemperature()));
+        }
+    }
+
+    public void setCurrentLocationFound(boolean currentLocationFound) {
+        this.currentLocationFound = currentLocationFound;
+    }
+
+    public void onClickCurrentLocation(View view) {
+        getLocation();
     }
 }

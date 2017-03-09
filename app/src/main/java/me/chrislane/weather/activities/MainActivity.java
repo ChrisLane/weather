@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.github.pwittchen.weathericonview.WeatherIconView;
 import me.chrislane.weather.R;
+import me.chrislane.weather.generators.SmallTalkGenerator;
 import me.chrislane.weather.models.WeatherForecastModel;
 import me.chrislane.weather.models.WeatherModel;
 import me.chrislane.weather.tasks.FutureWeatherTask;
@@ -27,14 +29,23 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
+    // TODO: Generate small talk for future weather
+    // TODO: Make app beautiful
+
+    // TODO: Extra features: Map location selection
+    // TODO: Extra features: Adjust theme based on current weather
+    // TODO: Extra features: Share via social media
+
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
     private WeatherForecastModel weatherForecastModel;
     private TextView locationName, todayTemperature, todayDescription, todayWind, todayPressure,
-            todayHumidity, todaySunrise, todaySunset;
+            todayHumidity, todaySunrise, todaySunset, smallTalk;
+    private WeatherIconView todayIcon;
     private boolean currentLocationFound = false;
     private View dayOne, dayTwo, dayThree, dayFour, dayFive;
+    private SmallTalkGenerator smallTalkGenerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         progressDialog = new ProgressDialog(this);
         // Initialise today's weather model
         weatherForecastModel = new WeatherForecastModel();
+        // Initialise small talk generator
+        smallTalkGenerator = new SmallTalkGenerator(this, weatherForecastModel);
 
         // Initialise UI elements
         locationName = (TextView) findViewById(R.id.location_name);
@@ -71,7 +84,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         todayHumidity = (TextView) findViewById(R.id.today_humidity);
         todaySunrise = (TextView) findViewById(R.id.today_sunrise);
         todaySunset = (TextView) findViewById(R.id.today_sunset);
-        SearchView locationSearch = (SearchView) findViewById(R.id.location_search);
+        smallTalk = (TextView) findViewById(R.id.small_talk);
+        todayIcon = (WeatherIconView) findViewById(R.id.today_icon);
+
+        final SearchView locationSearch = (SearchView) findViewById(R.id.location_search);
 
         locationSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -79,18 +95,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 if (Geocoder.isPresent()) {
                     try {
                         Geocoder gc = new Geocoder(MainActivity.this);
-                        List<Address> addresses = gc.getFromLocationName(query, 1); // get the found Address Objects
+                        List<Address> addresses = gc.getFromLocationName(query, 1);
 
-                        Location location = new Location("");
-                        location.setLatitude(addresses.get(0).getLatitude());
-                        location.setLongitude(addresses.get(0).getLongitude());
+                        if (addresses != null && !addresses.isEmpty()) {
+                            Location location = new Location("");
+                            location.setLatitude(addresses.get(0).getLatitude());
+                            location.setLongitude(addresses.get(0).getLongitude());
 
-                        new TodayWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
-                        new FutureWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
+                            new TodayWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
+                            new FutureWeatherTask(MainActivity.this, progressDialog, weatherForecastModel).execute(location);
+                        } else {
+                            // Inform the user their location couldn't be found
+                            Toast.makeText(MainActivity.this, "Couldn't find location", 5).show();
+                        }
                     } catch (IOException e) {
                         // handle the exception
                     }
                 }
+
+                // Hide keyboard
+                locationSearch.clearFocus();
 
                 return true;
             }
@@ -100,9 +124,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 return false;
             }
         });
-
-        // Get the device's location
-        getLocation();
     }
 
     @Override
@@ -110,8 +131,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         if (location != null) {
             // Don't check location again
             locationManager.removeUpdates(this);
-
-            Log.v("Location Changed", location.getLatitude() + " and " + location.getLongitude());
 
             new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
             new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
@@ -151,11 +170,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Request device location again
-                    getLocation();
-
-                } else {
+                if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // TODO: Do something about permission being denied
                 }
             }
@@ -164,13 +179,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void getLocation() {
         String locationProvider = LocationManager.GPS_PROVIDER;
-        Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-
-        // Get weather for the last known location
-        if (lastKnownLocation != null && !currentLocationFound) {
-            new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
-            new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
-        }
 
         // Get weather for the current location
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -180,6 +188,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         } else if (locationManager.isProviderEnabled(locationProvider)) {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+
+            // Get weather for the last known location
+            if (lastKnownLocation != null && !currentLocationFound) {
+                new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
+                new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
+            }
+
             locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
         }
     }
@@ -209,6 +225,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(today.getSunrise())));
             todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(today.getSunset())));
         }
+
+        smallTalk.setText(smallTalkGenerator.getCurrentWeatherComment());
+        todayIcon.setIconResource(getString(today.getIconResourceString()));
     }
 
     public void updateFutureUI() {
@@ -224,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             TextView pressure = (TextView) dayView.findViewById(R.id.pressure);
             TextView humidity = (TextView) dayView.findViewById(R.id.humidity);
             TextView temperature = (TextView) dayView.findViewById(R.id.temperature);
+            WeatherIconView icon = (WeatherIconView) dayView.findViewById(R.id.icon);
 
             if (dayWeather.getDate() != null) {
                 DateFormat formatter = new SimpleDateFormat("EEE, MMM d", Locale.ENGLISH);
@@ -234,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             pressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(dayWeather.getPressure())));
             humidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", dayWeather.getHumidity()));
             temperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", dayWeather.getTemperature()));
+            icon.setIconResource(getString(dayWeather.getIconResourceString()));
         }
     }
 

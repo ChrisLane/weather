@@ -1,5 +1,6 @@
 package me.chrislane.weather.models;
 
+import me.chrislane.weather.R;
 import me.chrislane.weather.tasks.WeatherTask;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,9 +9,17 @@ import java.util.Date;
 
 public class WeatherModel {
     private double temperature, pressure, minTemperature, maxTemperature, windSpeed, windDirection;
-    private int humidity;
+    private int humidity, weatherID;
     private Date sunrise, sunset, date;
     private String countryCode, cityName, description, icon;
+
+    public int getWeatherID() {
+        return weatherID;
+    }
+
+    public void setWeatherID(int weatherID) {
+        this.weatherID = weatherID;
+    }
 
     public Date getDate() {
         return date;
@@ -113,7 +122,11 @@ public class WeatherModel {
     }
 
     public void setCityName(String cityName) {
-        this.cityName = cityName;
+        if (cityName != null) {
+            this.cityName = cityName;
+        } else {
+            this.cityName = "";
+        }
     }
 
     public String getCountryCode() {
@@ -121,7 +134,11 @@ public class WeatherModel {
     }
 
     public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+        if (countryCode != null) {
+            this.countryCode = countryCode;
+        } else {
+            this.countryCode = "";
+        }
     }
 
     public void setFromJson(JSONObject json, WeatherTask.API api) {
@@ -133,6 +150,7 @@ public class WeatherModel {
                     JSONObject wind = json.getJSONObject("wind");
                     JSONObject sys = json.getJSONObject("sys");
 
+                    setWeatherID(weather.getInt("id"));
                     setDescription(weather.getString("description"));
                     setIcon(weather.getString("icon"));
                     setTemperature(main.getDouble("temp"));
@@ -156,6 +174,7 @@ public class WeatherModel {
                     setMaxTemperature(temp.getDouble("max"));
                     setPressure(json.getDouble("pressure"));
                     setHumidity(json.getInt("humidity"));
+                    setWeatherID(weather.getInt("id"));
                     setDescription(weather.getString("description"));
                     setIcon(weather.getString("icon"));
                     setWindSpeed(json.getDouble("speed"));
@@ -164,5 +183,51 @@ public class WeatherModel {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getIconResourceString() {
+        String icon = getIcon();
+
+        // Day Icons
+        switch (icon) {
+            case "01d":
+                return R.string.wi_day_sunny;
+            case "02d":
+            case "03d":
+            case "04d":
+                return R.string.wi_day_cloudy;
+            case "09d":
+                return R.string.wi_day_rain_mix;
+            case "10d":
+                return R.string.wi_day_rain;
+            case "11d":
+                return R.string.wi_day_thunderstorm;
+            case "13d":
+                return R.string.wi_day_snow;
+            case "50d":
+                return R.string.wi_day_fog;
+        }
+
+        // Night Icons
+        switch (icon) {
+            case "01n":
+                return R.string.wi_night_clear;
+            case "02n":
+            case "03n":
+            case "04n":
+                return R.string.wi_night_cloudy;
+            case "09n":
+                return R.string.wi_night_rain_mix;
+            case "10n":
+                return R.string.wi_night_rain;
+            case "11n":
+                return R.string.wi_night_thunderstorm;
+            case "13n":
+                return R.string.wi_night_snow;
+            case "50n":
+                return R.string.wi_night_fog;
+        }
+
+        return -1;
     }
 }

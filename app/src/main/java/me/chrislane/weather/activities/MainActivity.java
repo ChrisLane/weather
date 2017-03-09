@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // TODO: Make app beautiful
 
     // TODO: Extra features: Map location selection
-    // TODO: Extra features: Adjust theme based on current weather
+    // TODO: Extra features: Adjust theme based on current time
     // TODO: Extra features: Share via social media
 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // TODO: Do something about permission being denied
+                    // TODO: Do something about permission being denied (Notification)
                 }
             }
         }
@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         // Get weather for the current location
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Explain permissions if permission previously denied
             // Request permissions
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);

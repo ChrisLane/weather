@@ -22,6 +22,7 @@
         <item>Brrrr. Pretty cold outside</item>
         <item>Do you want to build a snowman?</item>
         <item>Snow! Let\'s go sledging!</item>
+        <item>Winter is coming</item>
     </string-array>
     <string-array name="weather_group_7xx">
         <item>Careful, visibility might not be great</item>

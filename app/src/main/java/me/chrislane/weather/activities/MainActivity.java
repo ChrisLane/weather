@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         todayWind = (TextView) findViewById(R.id.today_wind);
         todayPressure = (TextView) findViewById(R.id.today_pressure);
         todayHumidity = (TextView) findViewById(R.id.today_humidity);
-        todaySunrise = (TextView) findViewById(R.id.today_sunrise);
-        todaySunset = (TextView) findViewById(R.id.today_sunset);
+        /*todaySunrise = (TextView) findViewById(R.id.today_sunrise);
+        todaySunset = (TextView) findViewById(R.id.today_sunset);*/
         smallTalk = (TextView) findViewById(R.id.small_talk);
         todayIcon = (WeatherIconView) findViewById(R.id.today_icon);
 
@@ -213,11 +213,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         todayPressure.setText(String.format(Locale.ENGLISH, "Pressure: %d hPa", Math.round(today.getPressure())));
         todayHumidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", today.getHumidity()));
 
-        if (today.getSunrise() != null && today.getSunset() != null) {
+        /*if (today.getSunrise() != null && today.getSunset() != null) {
             DateFormat formatter = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
             todaySunrise.setText(String.format(Locale.ENGLISH, "Sunrise: %s", formatter.format(today.getSunrise())));
             todaySunset.setText(String.format(Locale.ENGLISH, "Sunset: %s", formatter.format(today.getSunset())));
-        }
+        }*/
 
         smallTalk.setText(smallTalkGenerator.getCurrentWeatherComment());
         todayIcon.setIconResource(getString(today.getIconResourceString()));
@@ -258,5 +258,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public void onClickCurrentLocation(View view) {
         getLocation();
+    }
+
+    public void onClickShare(View view) {
     }
 }

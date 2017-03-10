@@ -46,10 +46,20 @@
 
                     <SearchView
                             android:id="@+id/location_search"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
                             android:background="@color/colorPrimary"/>
+
+                    <ImageButton
+                            android:id="@+id/share"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="24dp"
+                            android:layout_gravity="end"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_share"
+                            android:onClick="onClickShare"/>
 
                 </android.support.v7.widget.Toolbar>
 
@@ -107,7 +117,7 @@
                             android:textSize="16sp"
                             android:textColor="@color/textColor"/>
 
-                    <TextView
+                    <!--<TextView
                             android:id="@+id/today_sunrise"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -119,14 +129,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
-                            android:textColor="@color/textColor"/>
+                            android:textColor="@color/textColor"/>-->
 
                 </LinearLayout>
 
                 <!-- Icon -->
                 <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_weight="1"
                         android:orientation="vertical">

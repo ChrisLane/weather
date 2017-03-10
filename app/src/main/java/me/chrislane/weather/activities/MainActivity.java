@@ -52,20 +52,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Add to the layout
-        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.content_list);
-        dayOne = View.inflate(this, R.layout.weather_list_item, null);
-        dayTwo = View.inflate(this, R.layout.weather_list_item, null);
-        dayThree = View.inflate(this, R.layout.weather_list_item, null);
-        dayFour = View.inflate(this, R.layout.weather_list_item, null);
-        dayFive = View.inflate(this, R.layout.weather_list_item, null);
-
-        mainLayout.addView(dayOne);
-        mainLayout.addView(dayTwo);
-        mainLayout.addView(dayThree);
-        mainLayout.addView(dayFour);
-        mainLayout.addView(dayFive);
-
         // Initialise location manager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // Initialise progress dialog
@@ -201,11 +187,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     public ArrayList<View> getDayViews() {
         ArrayList<View> result = new ArrayList<>();
-        result.add(dayOne);
-        result.add(dayTwo);
-        result.add(dayThree);
-        result.add(dayFour);
-        result.add(dayFive);
+        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.content_list);
+        int days = weatherForecastModel.getFutureDays().size();
+
+        for (int i = 0; i < days; i++) {
+            View day = View.inflate(this, R.layout.weather_list_item, null);
+            mainLayout.addView(day);
+            result.add(day);
+        }
 
         return result;
     }

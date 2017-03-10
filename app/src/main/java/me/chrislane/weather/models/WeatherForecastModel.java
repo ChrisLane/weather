@@ -8,63 +8,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class WeatherForecastModel {
-    private WeatherModel
-            today = new WeatherModel(),
-            dayOne = new WeatherModel(),
-            dayTwo = new WeatherModel(),
-            dayThree = new WeatherModel(),
-            dayFour = new WeatherModel(),
-            dayFive = new WeatherModel();
+    private WeatherModel today = new WeatherModel();
+    private ArrayList<WeatherModel> futureDays = new ArrayList<>();
 
     public WeatherModel getToday() {
         return today;
     }
 
-    public WeatherModel getDayOne() {
-        return dayOne;
-    }
-
-    public WeatherModel getDayTwo() {
-        return dayTwo;
-    }
-
-    public WeatherModel getDayThree() {
-        return dayThree;
-    }
-
-    public WeatherModel getDayFour() {
-        return dayFour;
-    }
-
-    public WeatherModel getDayFive() {
-        return dayFive;
-    }
-
-    public WeatherModel getDay(int i) {
-        switch (i) {
-            case 0:
-                return dayOne;
-            case 1:
-                return dayTwo;
-            case 2:
-                return dayThree;
-            case 3:
-                return dayFour;
-            case 4:
-                return dayFive;
-        }
-        return null;
-    }
-
     public ArrayList<WeatherModel> getFutureDays() {
-        ArrayList<WeatherModel> result = new ArrayList<>();
-        result.add(dayOne);
-        result.add(dayTwo);
-        result.add(dayThree);
-        result.add(dayFour);
-        result.add(dayFive);
-
-        return result;
+        return futureDays;
     }
 
     public void formWeatherJson(JSONObject json, WeatherTask.API api) {
@@ -77,10 +29,12 @@ public class WeatherForecastModel {
                     JSONArray list = json.getJSONArray("list");
                     String city = json.getJSONObject("city").getString("name");
                     String country = json.getJSONObject("city").getString("country");
-                    for (int i = 0; i < 5; i++) {
-                        getDay(i).setCityName(city);
-                        getDay(i).setCountryCode(country);
-                        getDay(i).setFromJson(list.getJSONObject(i), api);
+                    for (int i = 1; i < list.length(); i++) {
+                        WeatherModel day = new WeatherModel();
+                        day.setCityName(city);
+                        day.setCountryCode(country);
+                        day.setFromJson(list.getJSONObject(i), api);
+                        futureDays.add(day);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

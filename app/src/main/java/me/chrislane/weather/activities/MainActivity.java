@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // TODO: Extra features: Share via social media
 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    private final static String ACTIVITY = "MainActivity";
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
     private WeatherForecastModel weatherForecastModel;
@@ -99,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             Toast.makeText(MainActivity.this, "Couldn't find location", 5).show();
                         }
                     } catch (IOException e) {
-                        // handle the exception
+                        Toast.makeText(MainActivity.this, "Requires play-services", 5).show();
+                        Log.e(ACTIVITY, "Failed to fetch location. Are play-services installed? Running on an emulator?", e);
                     }
                 }
 

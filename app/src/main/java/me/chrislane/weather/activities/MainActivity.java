@@ -33,11 +33,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
-    // TODO: Make app beautiful
-
-    // TODO: Extra features: Map location selection
     // TODO: Extra features: Adjust theme based on current time
-    // TODO: Extra features: Share via social media
 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private final static int MAPS_REQUEST_CODE = 5555;
@@ -301,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, smallTalkGenerator.getCurrentWeatherComment() + "\n" + smallTalkGenerator.getFutureWeatherComment());
+        ignoreResume = true;
         startActivity(Intent.createChooser(intent, "Share via"));
     }
 

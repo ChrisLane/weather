@@ -14,10 +14,6 @@ public abstract class WeatherTask extends AsyncTask<Location, String, JSONObject
     private final WeatherForecastModel weatherForecastModel;
     private final MainActivity mainActivity;
 
-    public enum API {
-        WEATHER, FORECAST
-    }
-
     public WeatherTask(MainActivity mainActivity, ProgressDialog progressDialog, WeatherForecastModel weatherForecastModel) {
         this.mainActivity = mainActivity;
         this.progressDialog = progressDialog;
@@ -39,7 +35,7 @@ public abstract class WeatherTask extends AsyncTask<Location, String, JSONObject
 
         Location location = params[0];
         String url = "";
-        switch (getAPI()){
+        switch (getAPI()) {
             case WEATHER:
                 url = "http://api.openweathermap.org/data/2.5/" +
                         "weather?" +
@@ -76,4 +72,8 @@ public abstract class WeatherTask extends AsyncTask<Location, String, JSONObject
     }
 
     public abstract API getAPI();
+
+    public enum API {
+        WEATHER, FORECAST
+    }
 }

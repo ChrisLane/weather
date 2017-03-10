@@ -37,12 +37,22 @@
                     <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="24dp"
-                            android:layout_marginEnd="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="8dp"
                             android:contentDescription="@string/current_location_description"
                             android:background="@android:color/transparent"
                             android:onClick="onClickCurrentLocation"
-                            android:src="@drawable/ic_my_location_black"/>
+                            android:src="@drawable/ic_my_location"/>
+
+                    <ImageButton
+                            android:id="@+id/location_select"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_add_location"
+                            android:onClick="onClickSelectLocation"/>
 
                     <SearchView
                             android:id="@+id/location_search"
@@ -54,8 +64,7 @@
                             android:id="@+id/share"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="24dp"
+                            android:layout_marginEnd="16dp"
                             android:layout_gravity="end"
                             android:background="@android:color/transparent"
                             android:src="@drawable/ic_share"

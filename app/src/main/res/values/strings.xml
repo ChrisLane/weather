@@ -44,4 +44,5 @@
         <item>Whoooosh goes the wind</item>
         <item>Seems a little blowy outside</item>
     </string-array>
+    <string name="title_activity_maps">Location Select</string>
 </resources>

@@ -1,6 +1,7 @@
 package me.chrislane.weather.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.github.pwittchen.weathericonview.WeatherIconView;
 import me.chrislane.weather.R;
 import me.chrislane.weather.generators.SmallTalkGenerator;
@@ -36,7 +40,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // TODO: Extra features: Share via social media
 
     private final static int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    private final static int MAPS_REQUEST_CODE = 5555;
     private final static String ACTIVITY = "MainActivity";
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
     private LocationManager locationManager;
     private ProgressDialog progressDialog;
     private WeatherForecastModel weatherForecastModel;
@@ -45,11 +56,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private WeatherIconView todayIcon;
     private boolean currentLocationFound = false;
     private SmallTalkGenerator smallTalkGenerator;
-
-    static {
-        AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
-    }
+    private Location currentLocation;
+    private boolean ignoreResume = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             // Don't check location again
             locationManager.removeUpdates(this);
 
+            currentLocation = location;
+
             new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
             new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
         }
@@ -144,7 +154,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected void onResume() {
         super.onResume();
 
-        getLocation();
+        if (!ignoreResume) {
+            getLocation();
+        } else {
+            ignoreResume = false;
+        }
     }
 
     @Override
@@ -168,6 +182,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case (MAPS_REQUEST_CODE): {
+                if (resultCode == Activity.RESULT_OK) {
+                    double latitude = data.getDoubleExtra("latitude", 0);
+                    double longitude = data.getDoubleExtra("longitude", 0);
+                    Location location = new Location("");
+                    location.setLatitude(latitude);
+                    location.setLongitude(longitude);
+
+                    new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
+                    new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(location);
+                }
+                break;
+            }
+        }
+    }
+
     private void getLocation() {
         String locationProvider = LocationManager.GPS_PROVIDER;
 
@@ -182,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
             // Get weather for the last known location
             if (lastKnownLocation != null && !currentLocationFound) {
+                currentLocation = lastKnownLocation;
+
                 new TodayWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
                 new FutureWeatherTask(this, progressDialog, weatherForecastModel).execute(lastKnownLocation);
             }
@@ -266,5 +302,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, smallTalkGenerator.getCurrentWeatherComment() + "\n" + smallTalkGenerator.getFutureWeatherComment());
         startActivity(Intent.createChooser(intent, "Share via"));
+    }
+
+    public void onClickSelectLocation(View view) {
+        if (currentLocation != null) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            intent.putExtra("latitude", currentLocation.getLatitude());
+            intent.putExtra("longitude", currentLocation.getLongitude());
+            ignoreResume = true;
+            startActivityForResult(intent, MAPS_REQUEST_CODE);
+        }
+    }
+
+    public ProgressDialog getProgressDialog() {
+        return progressDialog;
+    }
+
+    public WeatherForecastModel getWeatherForecastModel() {
+        return weatherForecastModel;
     }
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -43,8 +44,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             todayHumidity, todaySunrise, todaySunset, smallTalk;
     private WeatherIconView todayIcon;
     private boolean currentLocationFound = false;
-    private View dayOne, dayTwo, dayThree, dayFour, dayFive;
     private SmallTalkGenerator smallTalkGenerator;
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         ArrayList<View> result = new ArrayList<>();
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.content_list);
         int days = weatherForecastModel.getFutureDays().size();
+        mainLayout.removeAllViews();
 
         for (int i = 0; i < days; i++) {
             View day = View.inflate(this, R.layout.weather_list_item, null);

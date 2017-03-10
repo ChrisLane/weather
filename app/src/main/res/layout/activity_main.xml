@@ -15,7 +15,6 @@
             android:layout_height="match_parent">
 
         <LinearLayout
-                android:id="@+id/content_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -154,6 +153,14 @@
                     android:paddingBottom="16dp"
                     android:textSize="18sp"
                     android:background="@android:color/holo_blue_bright"/>
+
+            <LinearLayout
+                    android:id="@+id/content_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                <!-- Future Weather -->
+            </LinearLayout>
 
         </LinearLayout>
 

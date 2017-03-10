@@ -29,6 +29,7 @@ public class WeatherForecastModel {
                     JSONArray list = json.getJSONArray("list");
                     String city = json.getJSONObject("city").getString("name");
                     String country = json.getJSONObject("city").getString("country");
+                    futureDays.clear();
                     for (int i = 1; i < list.length(); i++) {
                         WeatherModel day = new WeatherModel();
                         day.setCityName(city);

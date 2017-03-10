@@ -27,10 +27,14 @@ public class SmallTalkGenerator {
     public String getCurrentWeatherComment() {
         int weatherID = forecast.getToday().getWeatherID();
         int stringArrayID = getStringArrayID(weatherID);
-        String[] smallTalk = context.getResources().getStringArray(stringArrayID);
-        int randomIndex = ThreadLocalRandom.current().nextInt(smallTalk.length);
 
-        return smallTalk[randomIndex];
+        if (stringArrayID >= 0) {
+            String[] smallTalk = context.getResources().getStringArray(stringArrayID);
+            int randomIndex = ThreadLocalRandom.current().nextInt(smallTalk.length);
+
+            return smallTalk[randomIndex];
+        }
+        return "";
     }
 
     public String getFutureWeatherComment() {

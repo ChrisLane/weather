@@ -2,6 +2,7 @@ package me.chrislane.weather.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.*;
 import android.os.Bundle;
@@ -11,10 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.SearchView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.github.pwittchen.weathericonview.WeatherIconView;
 import me.chrislane.weather.R;
 import me.chrislane.weather.generators.SmallTalkGenerator;
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
 
                 // Hide keyboard
-                locationSearch.clearFocus();
+                locationSearch.onActionViewCollapsed();
 
                 return true;
             }
@@ -264,5 +262,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void onClickShare(View view) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, smallTalkGenerator.getCurrentWeatherComment() + "\n" + smallTalkGenerator.getFutureWeatherComment());
+        startActivity(Intent.createChooser(intent, "Share via"));
     }
 }

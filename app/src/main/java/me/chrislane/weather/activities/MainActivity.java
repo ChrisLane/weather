@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
-    // TODO: Generate small talk for future weather
     // TODO: Make app beautiful
 
     // TODO: Extra features: Map location selection
@@ -243,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             humidity.setText(String.format(Locale.ENGLISH, "Humidity: %d%%", dayWeather.getHumidity()));
             temperature.setText(String.format(Locale.ENGLISH, "%1$,.1f°C", dayWeather.getTemperature()));
             icon.setIconResource(getString(dayWeather.getIconResourceString()));
+            smallTalk.setText(smallTalkGenerator.getCurrentWeatherComment() + "\n" + smallTalkGenerator.getFutureWeatherComment());
         }
     }
 
